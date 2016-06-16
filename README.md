@@ -51,6 +51,7 @@ class MyForm extends React.Component {
         <textarea
           name='bio'
           rows='5'
+          value={model.bio}
           onChange={bindToChangeEvent}
         />
         <hr />
@@ -105,6 +106,15 @@ Here are just some ideas to get you thinking about what's possible when you stop
 
 The model is never mutated, so it's easy to check when it's been changed.
 
+#### How It Might Look
+```js
+compose(
+  reformed(),
+  tracker
+)(YourFormComponent)
+```
+
+#### Example Implementation
 ```js
 // You could easily expand this to implement time travel
 const tracker = (WrappedComponent) => {
@@ -141,17 +151,25 @@ const tracker = (WrappedComponent) => {
   }
   return Tracker
 }
-
-compose(
-  reformed(),
-  tracker,
-)(YourFormComponent)
 ```
 
 ### Form Validation
 
 This is an ultra-simple higher-order component for synchronous form validation. It is in no way specific to this library, all it does is expected a `model` prop and apply additional `isValid` and `validationErrors` props based on how the model conforms to the validation rules.
 
+#### How It Might Look
+```js
+compose(
+  reformed(),
+  validate([
+    isRequired('firstName'),
+    isRequired('lastName'),
+    mustBeAtLeast('age', 18),
+  ])
+)(YourFormComponent)
+```
+
+#### Example Implementation
 ```js
 // treats `rules` as a tuple of [validator: Function, validationError: string]
 // `validationError` could easily be a function, if you wanted, for more
@@ -180,21 +198,12 @@ const mustBeAtLeast = (prop, val) => ([
   (model) => model[prop] >= val,
   `${prop}` must be at least `${val}`
 ])
-
-compose(
-  reformed(),
-  validate([
-    isRequired('firstName'),
-    isRequired('lastName'),
-    mustBeAtLeast('age', 18),
-  ])
-)(YourFormComponent)
 ```
 
 ### With Redux
 
+#### How It Might Look
 ```js
-
 // easily set initial form state from your redux store...
 // and bind a submission handler while you're at it.
 compose(
@@ -212,6 +221,15 @@ This, again, is a simplified example. You could very easily implement a
 debounce or throttle function to limit how often the data is written
 to local storage.
 
+#### How It Might Look
+```js
+compose(
+  reformed(),
+  syncAs('my-form-state')
+)(YourFormComponent)
+```
+
+#### Example Implementation
 ```js
 const syncAs = (storageKey) => (WrappedComponent) => {
   class SyncedComponent extends React.Component {
@@ -241,17 +259,25 @@ const syncAs = (storageKey) => (WrappedComponent) => {
   // hoist statics, wrap name, etc.
   return SyncedComponent
 }
-
-compose(
-  reformed(),
-  syncAs('my-form-state')
-)(YourFormComponent)
 ```
 
 ### Storage - Abstracted
 
 Notice anything interesting about the local storage example? It's not at all specific to local storage...
 
+#### How It Might Look
+```js
+compose(
+  reformed(),
+  syncWith(
+    'my-form',
+    (key) => JSON.parse(localStorage.getItem(key)),
+    (key, value) => localStorage.setItem(key, JSON.stringify(value))
+  )
+)(MyFormComponent)
+```
+
+#### Example Implementation
 ```js
 const syncWith = (key, get, set) => (WrappedComponent) => {
   class SyncedComponent extends React.Component {
@@ -262,7 +288,7 @@ const syncWith = (key, get, set) => (WrappedComponent) => {
       }
     }
 
-    // When we call `set` we can easily provide the current props as a
+    // When we call `set` we can provide the current props as a
     // third argument. This would be useful, for example, with other
     // higher-order components such as react-redux.
     componentWillReceiveProps (nextProps) {
@@ -278,15 +304,6 @@ const syncWith = (key, get, set) => (WrappedComponent) => {
   // ...
   return SyncedComponent
 }
-
-compose(
-  reformed(),
-  syncWith(
-    'my-form',
-    (key) => JSON.parse(localStorage.getItem(key)),
-    (key, value) => localStorage.setItem(key, JSON.stringify(value))
-  )
-)(MyFormComponent)
 ```
 
 ## API Documentation
