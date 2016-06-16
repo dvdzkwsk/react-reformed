@@ -1,0 +1,11 @@
+{
+  "name": "reformed",
+  "version": "0.0.0",
+  "description": "Deadly simple form bindings for React",
+  "main": "dist/reformed.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Zukowski <david@zuko.me> (https://zuko.me)",
+  "license": "MIT"
+}
