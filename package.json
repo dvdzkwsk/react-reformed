@@ -1,11 +1,23 @@
 {
   "name": "reformed",
   "version": "0.0.0",
-  "description": "Deadly simple form bindings for React",
+  "description": "Tiny form bindings for React",
   "main": "dist/reformed.js",
   "scripts": {
+    "compile": "babel src --out-dir lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "David Zukowski <david@zuko.me> (https://zuko.me)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "hoist-non-react-statics": "^1.2.0",
+    "object-assign": "^4.1.0"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.10.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-1": "^6.5.0"
+  }
 }
