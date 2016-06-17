@@ -1,11 +1,7 @@
 import React from 'react'
 import assign from 'object-assign'
 import hoistNonReactStatics from 'hoist-non-react-statics'
-
-const getComponentName = (component) => (
-  component.displayName ||
-  component.name
-)
+import getComponentName from './get-component-name'
 
 const makeWrapper = (middleware) => (WrappedComponent) => {
   class FormWrapper extends React.Component {
