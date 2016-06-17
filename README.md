@@ -1,6 +1,6 @@
 # Reformed (Name Pending)
 
-Deadly simple form bindings for React so you can stop storing your form data in local component state. This higher-order component wraps your component and, through props, injects form data (a "model") and simple bindings to update that model, giving you the opportunity to utilize composition to accomplish more advanced functionality without bloating your form component.
+Tiny form bindings for React so you can stop storing your form data in local component state. This higher-order component wraps your component and, through props, injects form data (a "model") and simple bindings to update that model, giving you the opportunity to utilize composition to accomplish more advanced functionality without bloating your form component.
 
 There is no framework here, it's about 100 lines of code that you could write yourself in a few minutes. The code is not what is important. My goal is to encourage developers to stop using local state in their forms, and do so without locking themselves into a prescriptive, and potentially monolithic, form library. There are some _really_ cool things you can do with simple composition, and this project is an attempt to shine some light on those alternative approaches.
 
@@ -29,7 +29,7 @@ And, most importantly, eliminate local component state as much as possible.
 
 ## Examples
 
-### Simple Form
+### Basic Form
 
 ```js
 import reformed from 'reformed'
@@ -88,10 +88,12 @@ class Main extends React.Component {
   }
 
   render () {
-    <MyForm
-      initialModel={{ firstName: 'Michael', lastName: 'Scott' }} // provide an initial model if you want
-      submit={this._onSubmit}
-    />
+    return (
+      <MyForm
+        initialModel={{ firstName: 'Michael', lastName: 'Scott' }} // provide an initial model if you want
+        submit={this._onSubmit}
+      />
+    )
   }
 }
 
@@ -182,7 +184,7 @@ const validate = (rules) => (WrappedComponent) => {
   return (props) => {
     const validationErrors = getValidationErrors(props.model)
 
-    React.createElement(WrappedComponent, {
+    return React.createElement(WrappedComponent, {
       ...props,
       isValid: !validationErrors.length,
       validationErrors,
@@ -196,7 +198,7 @@ const isRequired = (prop) => ([
 ])
 const mustBeAtLeast = (prop, val) => ([
   (model) => model[prop] >= val,
-  `${prop}` must be at least `${val}`
+  `${prop} must be at least ${val}`
 ])
 ```
 
@@ -253,7 +255,7 @@ const syncAs = (storageKey) => (WrappedComponent) => {
     }
 
     render () {
-      React.createElement(WrappedComponent, this.props)
+      return React.createElement(WrappedComponent, this.props)
     }
   }
   // hoist statics, wrap name, etc.
@@ -282,7 +284,7 @@ compose(
 const syncWith = (key, get, set) => (WrappedComponent) => {
   class SyncedComponent extends React.Component {
     componentWillMount () {
-      const fromStorage = get(storageKey, this.props)
+      const fromStorage = get(key, this.props)
       if (fromStorage) {
         this.props.setModel(fromStorage)
       }
@@ -298,7 +300,7 @@ const syncWith = (key, get, set) => (WrappedComponent) => {
     }
 
     render () {
-      React.createElement(WrappedComponent, this.props)
+      return React.createElement(WrappedComponent, this.props)
     }
   }
   // ...
@@ -315,3 +317,5 @@ const syncWith = (key, get, set) => (WrappedComponent) => {
 ### `setModel : Object -> Object`
 
 ### `bindInput : String -> Object`
+
+### `bindToChangeEvent` : Event -> undefined`
