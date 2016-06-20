@@ -1,4 +1,4 @@
-# Reformed (Name Pending)
+# React Reformed
 
 Tiny form bindings for React so you can stop storing your form data in local component state. This higher-order component wraps your component and, through props, injects form data (a "model") and simple bindings to update that model, giving you the opportunity to utilize composition to accomplish more advanced functionality without bloating your form component.
 
@@ -31,8 +31,10 @@ And, most importantly, eliminate local component state as much as possible.
 
 ### Basic Form
 
+Here's an example of a form that closely resembles basic form implementations that rely on `this.state`, but uses the form bindings instead.
+
 ```js
-import reformed from 'reformed'
+import reformed from 'react-reformed'
 
 class MyForm extends React.Component {
   _onSubmit = (e) => {
@@ -40,22 +42,22 @@ class MyForm extends React.Component {
     this.props.onSubmit(this.props.model)
   }
 
+  // this is essentially just `this.props.bindToChangeEvent`, which is provided
+  // by the form wrapper. We're just demoing `setProperty` for clarity in the
+  // first example.
+  _onChangeInput = (e) => {
+    this.props.setProperty(e.target.name, e.taget.value)
+  }
+
   render () {
-    const { model, bindInput, bindToChangeEvent } = this.props
+    const { model } = this.props
 
     return (
       <form onSubmit={this._onSubmit}>
-        <input {...bindInput('firstName')} />
-        <input {...bindInput('lastName')} />
-        <input {...bindInput('dob', 'date')} />
-        <textarea
-          name='bio'
-          rows='5'
-          value={model.bio}
-          onChange={bindToChangeEvent}
-        />
-        <hr />
-        {JSON.stringify(model, null, 2)}
+        <input name='firstName' onChange={this._onChangeInput} />
+        <input name='lastName' onChange={this._onChangeInput} />
+        <input name='dob' type='date' onChange={this._onChangeInput} />
+        <button type='submit'>Submit</button>
       </form>
     )
   }
@@ -70,13 +72,14 @@ export default reformed()(MyForm)
 This library provides some simple bindings to speed up form creation. These are for convenience only; you can get by with just `setProperty` and `setModel` if you'd like. I encourage you to write your own abstractions over these core setters.
 
 ```js
-import reformed from 'reformed'
+import reformed from 'react-reformed'
 
 // "model" and "bindInput" both come from reformed
 export const MyForm = ({ bindInput }) => {
   <form onSubmit={/* ... */}>
-    <input {...bindInput('name')} />        {/* "type" attribute defaults to "text" */}
-    <input {...bindInput('dob', 'date')} /> {/* but you can override it if necessary */}
+    <input {...bindInput('name')} />
+    <input type='date' {...bindInput('dob')} />
+    <textarea {...bindInput('bio')} />
     <button type='submit'>Submit</button>
   </form>
 )

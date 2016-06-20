@@ -1,12 +1,18 @@
 {
-  "name": "reformed",
-  "version": "0.0.0",
+  "name": "react-reformed",
+  "version": "0.1.0",
   "description": "Tiny form bindings for React",
-  "main": "dist/reformed.js",
+  "main": "lib/reformed.js",
   "scripts": {
-    "compile": "babel src --out-dir lib",
+    "clean": "rm -rf lib",
+    "build": "babel src --out-dir lib",
+    "prepublish": "npm run clean && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+    "src",
+    "lib"
+  ],
   "author": "David Zukowski <david@zuko.me> (https://zuko.me)",
   "license": "MIT",
   "dependencies": {

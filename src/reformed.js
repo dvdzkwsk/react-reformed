@@ -1,7 +1,7 @@
 import React from 'react'
 import assign from 'object-assign'
 import hoistNonReactStatics from 'hoist-non-react-statics'
-import getComponentName from './get-component-name'
+import getComponentName from './_internal/getComponentName'
 
 const makeWrapper = (middleware) => (WrappedComponent) => {
   class FormWrapper extends React.Component {
@@ -16,7 +16,11 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       }
     }
 
-    setModel = (model) => {
+    setModel = (newModel) => {
+      const model = typeof middleware === 'function'
+        ? middleware(newModel, this.props)
+        : newModel
+
       this.setState({ model })
       return model
     }
@@ -57,9 +61,8 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
         setProperty: this.setProperty,
         setModel: this.setModel,
       })
-      const finalProps = middleware ? middleware(props) : props
 
-      return React.createElement(WrappedComponent, finalProps)
+      return React.createElement(WrappedComponent, props)
     }
   }
 

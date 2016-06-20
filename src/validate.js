@@ -1,7 +1,7 @@
 import React from 'react'
 import assign from 'object-assign'
 import hoistNonReactStatics from 'hoist-non-react-statics'
-import getComponentName from './lib/get-component-name'
+import getComponentName from './_internal/getComponentName'
 
 const getValidationErrors = (rules, model) => rules.reduce((errors, [rule, err]) => {
   return !rule(model)
@@ -21,5 +21,10 @@ const validate = (rules) => (WrappedComponent) => {
   validated.displayName = `Validate(${getComponentName(WrappedComponent)})`
   return hoistNonReactStatics(validated, WrappedComponent)
 }
+
+export const isRequired = (prop, message = `${prop} is a required field`) => ([
+  (model) => !!model[prop],
+  message,
+])
 
 export default validate

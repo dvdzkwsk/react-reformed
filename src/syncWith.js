@@ -1,6 +1,6 @@
 import React from 'react'
 import hoistNonReactStatics from 'hoist-non-react-statics'
-import getComponentName from './lib/get-component-name'
+import getComponentName from './_internal/getComponentName'
 
 const syncWith = (key, get, set) => (WrappedComponent) => {
   class SyncedComponent extends React.Component {
