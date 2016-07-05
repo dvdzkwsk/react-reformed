@@ -325,7 +325,7 @@ class YourComponent extends React.Component {
 reformed()(YourComponent)
 ```
 
-### `setProperty : String -> * -> Object`
+### `setProperty : (String k, v) -> {k:v}`
 **Injected by the `reformed` higher order component.** Allows you to set a specific property on the model.
 
 Example:
@@ -333,7 +333,7 @@ Example:
 this.props.setProperty('firstName', 'Billy')
 ```
 
-### `setModel : Object -> Object`
+### `setModel : {k:v} -> {k:v}`
 **Injected by the `reformed` higher order component.** Allows you to completely override the model.
 
 Example:
@@ -344,7 +344,7 @@ this.props.setModel({
 })
 ```
 
-### `bindInput : String -> Object`
+### `bindInput : String k -> Object`
 **Injected by the `reformed` higher order component.** Applies `name`, `value`, and `onChange` properties to the input element.
 
 Example:
