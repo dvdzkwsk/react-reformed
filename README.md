@@ -107,6 +107,53 @@ export default Main
 
 Here are just some ideas to get you thinking about what's possible when you stop isolating form data in local state and allow it to flow through props. These example are not necessarily production-ready, as they are simply meant as conceptual demonstrations.
 
+### Form Validation
+
+This is an ultra-simple higher-order component for synchronous form validation. It is in no way specific to this library, all it does is expected a `model` prop and apply additional `isValid` and `validationErrors` props based on how the model conforms to the validation rules.
+
+#### How It Might Look
+```js
+compose(
+  reformed(),
+  validate([
+    isRequired('firstName'),
+    isRequired('lastName'),
+    mustBeAtLeast('age', 18),
+  ])
+)(YourFormComponent)
+```
+
+#### Example Implementation
+```js
+// treats `rules` as a tuple of [validator: Function, validationError: string]
+// `validationError` could easily be a function, if you wanted, for more
+// advanced error messages.
+const validate = (rules) => (WrappedComponent) => {
+  const getValidationErrors = (model) => rules.reduce((errors, [rule, err]) => {
+    return !rule(model) ? errors.concat(err) : errors
+  }, [])
+
+  return (props) => {
+    const validationErrors = getValidationErrors(props.model)
+
+    return React.createElement(WrappedComponent, {
+      ...props,
+      isValid: !validationErrors.length,
+      validationErrors,
+    })
+  }
+}
+
+const isRequired = (prop) => ([
+  (model) => !!model[prop],
+  `${prop} is a required field.`
+])
+const mustBeAtLeast = (prop, val) => ([
+  (model) => model[prop] >= val,
+  `${prop} must be at least ${val}`
+])
+```
+
 ### Tracking Changes
 
 The model is never mutated, so it's easy to check when it's been changed.
@@ -156,53 +203,6 @@ const tracker = (WrappedComponent) => {
   }
   return Tracker
 }
-```
-
-### Form Validation
-
-This is an ultra-simple higher-order component for synchronous form validation. It is in no way specific to this library, all it does is expected a `model` prop and apply additional `isValid` and `validationErrors` props based on how the model conforms to the validation rules.
-
-#### How It Might Look
-```js
-compose(
-  reformed(),
-  validate([
-    isRequired('firstName'),
-    isRequired('lastName'),
-    mustBeAtLeast('age', 18),
-  ])
-)(YourFormComponent)
-```
-
-#### Example Implementation
-```js
-// treats `rules` as a tuple of [validator: Function, validationError: string]
-// `validationError` could easily be a function, if you wanted, for more
-// advanced error messages.
-const validate = (rules) => (WrappedComponent) => {
-  const getValidationErrors = (model) => rules.reduce((errors, [rule, err]) => {
-    return !rule(model) ? errors.concat(err) : errors
-  }, [])
-
-  return (props) => {
-    const validationErrors = getValidationErrors(props.model)
-
-    return React.createElement(WrappedComponent, {
-      ...props,
-      isValid: !validationErrors.length,
-      validationErrors,
-    })
-  }
-}
-
-const isRequired = (prop) => ([
-  (model) => !!model[prop],
-  `${prop} is a required field.`
-])
-const mustBeAtLeast = (prop, val) => ([
-  (model) => model[prop] >= val,
-  `${prop} must be at least ${val}`
-])
 ```
 
 ### With Redux
@@ -313,12 +313,41 @@ const syncWith = (key, get, set) => (WrappedComponent) => {
 
 ## API Documentation
 
-### `reformed : (Object -> Object) -> ReactComponent -> ReactComponent`
+### `reformed : (Props -> Props) -> ReactComponent -> ReactComponent`
+Wraps a React component and injects the form model and setters for that model.
+
+Example:
+```js
+class YourComponent extends React.Component {
+  /* ... */
+}
+
+reformed()(YourComponent)
+```
 
 ### `setProperty : String -> * -> Object`
+**Injected by the `reformed` higher order component.** Allows you to set a specific property on the model.
+
+Example:
+```js
+this.props.setProperty('firstName', 'Billy')
+```
 
 ### `setModel : Object -> Object`
+**Injected by the `reformed` higher order component.** Allows you to completely override the model.
+
+Example:
+```js
+this.props.setModel({
+  firstName: 'Bob',
+  lastName: 'Loblaw'
+})
+```
 
 ### `bindInput : String -> Object`
+**Injected by the `reformed` higher order component.** Applies `name`, `value`, and `onChange` properties to the input element.
 
-### `bindToChangeEvent` : Event -> undefined`
+Example:
+```js
+<input {...this.props.bindInput('firstName') />
+```
