@@ -16,11 +16,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       }
     }
 
-    setModel = (newModel) => {
-      const model = typeof middleware === 'function'
-        ? middleware(newModel, this.props)
-        : newModel
-
+    setModel = (model) => {
       this.setState({ model })
       return model
     }
@@ -44,25 +40,27 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       this.setProperty(e.target.name, value)
     }
 
-    bindInput = (name, type = 'text') => {
+    bindInput = (name) => {
       return {
         name,
-        type,
         value: this.state.model[name],
         onChange: this.bindToChangeEvent,
       }
     }
 
     render () {
-      const props = assign({}, this.props, {
+      const nextProps = assign({}, this.props, {
         bindInput: this.bindInput,
         bindToChangeEvent: this.bindToChangeEvent,
         model: this.state.model,
         setProperty: this.setProperty,
         setModel: this.setModel,
       })
+      const finalProps = typeof middleware === 'function'
+        ? middleware(nextProps)
+        : nextProps
 
-      return React.createElement(WrappedComponent, props)
+      return React.createElement(WrappedComponent, finalProps)
     }
   }
 
