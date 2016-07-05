@@ -6,7 +6,7 @@ import getComponentName from './_internal/getComponentName'
 const makeWrapper = (middleware) => (WrappedComponent) => {
   class FormWrapper extends React.Component {
     static propTypes = {
-      initialModel: PropTypes.object,
+      initialModel: React.PropTypes.object,
     }
 
     constructor (props, ctx) {
