@@ -1,10 +1,12 @@
 # React Reformed
 
-Tiny form bindings for React so you can stop storing your form data in local component state. This higher-order component wraps your component and, through props, injects form data (a "model") and simple bindings to update that model, giving you the opportunity to utilize composition to accomplish more advanced functionality without bloating your form component.
+Tiny form bindings for React so you can stop storing your form data in local component state. This higher-order component wraps your component and, through props, injects form data (a "model") and simple bindings to update that model, giving you the opportunity to utilize composition to accomplish more advanced functionality without bloating the form component itself.
 
-There is no framework here, it's about 100 lines of code that you could write yourself in a few minutes. The code is not what is important. My goal is to encourage developers to stop using local state in their forms, and do so without locking themselves into a prescriptive, and potentially monolithic, form library. There are some _really_ cool things you can do with simple composition, and this project is an attempt to shine some light on those alternative approaches.
+There is no framework here, it's about 75 lines of code that you could write yourself in a few minutes. The code is not what is important. My goal is to encourage developers to stop using local state in their forms, and do so without locking themselves into a prescriptive, and potentially monolithic, form library. There are some _really_ cool things you can do with simple composition, and this project is an attempt to shine some light on those alternative approaches.
 
 This library does not concern itself with submission, validation, or anything of that sort -- it's just a simple read/write API, and isn't even all that specific to forms. Everybody's forms are different, and I'm not smart enough to create a universal abstraction. As such, over time, I've found it easy to encapsulate the core logic of a form (setting properties on a model) in a single component and leverage composition to perform more intricate functionality.
+
+[Try it out in this JSFiddle sandbox.](https://jsfiddle.net/465qszsx/4/)
 
 ## Table of Contents
 
@@ -14,16 +16,18 @@ This library does not concern itself with submission, validation, or anything of
 
 ## Rationale
 
-Controlled components are great; they allow you to perform realtime validation (read: prior to submission), transform user inputs on the fly, track changes over time, and generally improve developer and user experience. However, often times controlled components lead to a proliferation of local component state. You begin tracking validation states (should we be validating yet? Are we performing asynchronous operations?), submission states, and more. Before you know it, a small form component is a sizeable tangle of local state. What happens when something else needs access to that state? How do you incorporate shared validation logic?
+Controlled components are great, they allow you to perform realtime validation, transform user inputs on the fly, track changes over time, and generally improve developer and user experience. However, often times controlled components lead to a proliferation of local component state. You begin tracking validation states (should we be validating yet? Are we performing asynchronous operations?), submission states, and more. Before you know it, a small form component is a sizeable tangle of local state. What happens when something else needs access to that state? How do you incorporate shared validation logic?
 
-Some solutions use refs, others offer bindings onto _local_ state, and still more tout a Comprehensive Form Solution, but none of them feel right. Either they do too much, are too prescriptive, or just get in the way.
+Some libraries solve this with refs, others offer bindings onto _local_ state, and still more tout a Comprehensive Form Solution with their own components and validation systems, but none of them feel right. Either they do too much, are too prescriptive, or just get in the way. Chances are, at some point these libraries will no longer fit your use case, forcing you to fight against rather than work with them. That is why this is not [another library](https://xkcd.com/927/), but instead an appeal to a different way of thinking.
 
 With the approach offered here, because everything important to your form now lives in props, you can easily:
 
-* Track/store/replay changes to your model over time
 * Compose higher-order components (sync to local storage, validate your form, etc.)
+* Track/store/replay changes to your model over time
+* Change what the injected model setters do, without changing the actual form
 * Spy or stub all `setModel`/`setProperty`/etc. calls in testing
 * Avoid becoming locked into a specific framework
+* Allows for a pluggable/composeable ecosystem, rather than one-solution-to-rule-them-all
 
 And, most importantly, eliminate local component state as much as possible.
 
@@ -42,10 +46,11 @@ class MyForm extends React.Component {
     this.props.onSubmit(this.props.model)
   }
 
-  // this is essentially just `this.props.bindToChangeEvent`, which is provided
-  // by the form wrapper. We're just demoing `setProperty` for clarity in the
-  // first example.
+  // this method is essentially just `this.props.bindToChangeEvent`,
+  // which is provided by the reformed wrapper. We're just demoing
+  // `setProperty` for clarity in the first example.
   _onChangeInput = (e) => {
+    // `setProperty` is injected by `reformed`
     this.props.setProperty(e.target.name, e.taget.value)
   }
 
@@ -75,7 +80,7 @@ This library provides some simple bindings to speed up form creation. These are 
 import reformed from 'react-reformed'
 
 // "model" and "bindInput" both come from reformed
-export const MyForm = ({ bindInput }) => {
+const MyForm = ({ bindInput }) => {
   <form onSubmit={/* ... */}>
     <input {...bindInput('name')} />
     <input type='date' {...bindInput('dob')} />
@@ -83,6 +88,8 @@ export const MyForm = ({ bindInput }) => {
     <button type='submit'>Submit</button>
   </form>
 )
+
+const MyFormContainer = reformed()(MyForm)
 
 // Then, use it just like you would in any other component
 class Main extends React.Component {
@@ -92,15 +99,13 @@ class Main extends React.Component {
 
   render () {
     return (
-      <MyForm
+      <MyFormContainer
         initialModel={{ firstName: 'Michael', lastName: 'Scott' }} // provide an initial model if you want
         submit={this._onSubmit}
       />
     )
   }
 }
-
-export default Main
 ```
 
 ## Advanced Uses
@@ -209,11 +214,13 @@ const tracker = (WrappedComponent) => {
 
 #### How It Might Look
 ```js
-// easily set initial form state from your redux store...
+// Easily set initial form state from your redux store...
 // and bind a submission handler while you're at it.
+// You could also write this in such a way to persist
+// your form to the redux store over time.
 compose(
   connect(
-    (state) => ({ model: state.forms.myInitialFormModel }),
+    (state) => ({ initialModel: state.forms.myInitialFormModel }),
     { submit: mySubmitFunction }
   ),
   reformed(),
@@ -318,11 +325,11 @@ Wraps a React component and injects the form model and setters for that model.
 
 Example:
 ```js
-class YourComponent extends React.Component {
+class YourForm extends React.Component {
   /* ... */
 }
 
-reformed()(YourComponent)
+reformed()(YourForm)
 ```
 
 ### `setProperty : (String k, v) -> {k:v}`
