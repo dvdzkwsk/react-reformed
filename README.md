@@ -19,18 +19,19 @@ This library does not concern itself with submission, validation, or anything of
 
 Controlled components are great, they allow you to perform realtime validation, transform user inputs on the fly, track changes over time, and generally improve developer and user experience. However, often times controlled components lead to a proliferation of local component state. You begin tracking validation states (should we be validating yet? Are we performing asynchronous operations?), submission states, and more. Before you know it, a small form component is a sizeable tangle of local state. What happens when something else needs access to that state? How do you incorporate shared validation logic?
 
-Some libraries solve this with refs, others offer bindings onto _local_ state, and still more tout a Comprehensive Form Solution with their own components and validation systems, but none of them feel right. Either they do too much, are too prescriptive, or just get in the way. Chances are, at some point these libraries will no longer fit your use case, forcing you to fight against rather than work with them. That is why this is not [another library](https://xkcd.com/927/), but instead an appeal to a different way of thinking.
+Some libraries solve this with refs, others offer bindings onto _local_ state, and still more tout a Comprehensive Form Solution with their own components and validation systems, but none of them feel right. Either they do too much, are too prescriptive, or just get in the way. Chances are, at some point these libraries will no longer fit your use case, forcing you to fight against rather than work with them. That is why this is not another library, but instead an appeal to a different way of thinking.
 
 With the approach offered here, because everything important to your form now lives in props, you can easily:
 
-* Compose higher-order components (sync to local storage, validate your form, etc.)
-* Track/store/replay changes to your model over time
-* Change what the injected model setters do, without changing the actual form
+* Eliminate or reduce local component state
+* Compose higher-order components as "middleware" (e.g. form validation)
+* Serialize and rehydrate form state
+* Replay changes to your model over time
+* Change what the injected model setters do, without changing the form itself
 * Spy or stub all `setModel`/`setProperty`/etc. calls in testing
 * Avoid becoming locked into a specific framework
-* Allows for a pluggable/composeable ecosystem, rather than one-solution-to-rule-them-all
 
-And, most importantly, eliminate local component state as much as possible.
+Most importantly, this approach allows for a pluggable/composeable ecosystem, rather than a One Solution To Rule Them All ([_but will soon change_](https://xkcd.com/927/)) approach.
 
 ## Usage
 
@@ -49,6 +50,15 @@ export class YourForm extends React.Component {
 }
 
 export default reformed()(YourForm)
+```
+
+You can also grab some of the example higher-order components via the npm package. These are just for demonstration, so they are not included in the main export. Use them just to give yourself some ideas!
+
+```js
+
+import compose from 'react-reformed/lib/compose'
+import syncWith from 'react-reformed/lib/syncWith'
+import validate from 'react-reformed/lib/validate'
 ```
 
 ## Examples
@@ -102,7 +112,7 @@ import reformed from 'react-reformed'
 // "model" and "bindInput" both come from reformed
 const MyForm = ({ bindInput }) => {
   <form onSubmit={/* ... */}>
-    <input {...bindInput('name')} />
+    <input type='text' {...bindInput('name')} />
     <input type='date' {...bindInput('dob')} />
     <textarea {...bindInput('bio')} />
     <button type='submit'>Submit</button>
@@ -143,10 +153,35 @@ compose(
   validate([
     isRequired('firstName'),
     isRequired('lastName'),
-    mustBeAtLeast('age', 18),
+    mustBeAtLeast('age', 18)
   ])
 )(YourFormComponent)
 ```
+
+You could totally go above and beyond and implement something like this:
+
+```js
+compose(
+  reformed(),
+  validateSchema({
+    firstName: {
+      type: 'string',
+      required: true
+    },
+    lastName: {
+      type: 'string',
+      required: true
+    },
+    age: {
+      test: (value) => {
+        return age && age > 18
+      }
+    }
+  })
+)(YourFormComponent)
+```
+
+And no matter what you choose to do, your _form never changes_.
 
 #### Example Implementation
 ```js
@@ -236,22 +271,30 @@ const tracker = (WrappedComponent) => {
 ```js
 // Easily set initial form state from your redux store...
 // and bind a submission handler while you're at it.
-// You could also write this in such a way to persist
-// your form to the redux store over time.
 compose(
-  connect(
-    (state) => ({ initialModel: state.forms.myInitialFormModel }),
-    { submit: mySubmitFunction }
-  ),
   reformed(),
+  connect(
+    (state) => ({ initialModel: state.forms.myForm.cachedModel }),
+    { onSubmit: mySubmitFunction }
+  ),
+)(YourFormComponent)
+```
+
+If you want to persist your form in Redux over time, you don't even need `reformed`. By following its pattern of simple model setters, you can just fulfill the same interface with `connect` and have a redux-ified form without importing another entire library. And if you switch to something else down the road you won't need to unreduxify the form, just its container.
+
+```js
+connect(
+  (state) => ({ model: state.form.myForm.model }),
+  (dispatch) => ({
+    setProperty: (prop, value) => dispatch(setFormProperty('myForm', prop, value)),
+    // etc...
+  })
 )(YourFormComponent)
 ```
 
 ### Local Storage
 
-This, again, is a simplified example. You could very easily implement a
-debounce or throttle function to limit how often the data is written
-to local storage.
+This, again, is a simplified example. You could very easily implement a debounce or throttle function to limit how often the data is written to local storage.
 
 #### How It Might Look
 ```js
