@@ -11,6 +11,7 @@ This library does not concern itself with submission, validation, or anything of
 ## Table of Contents
 
 1. [Rationale](#rationale)
+1. [Usage](#usage)
 1. [Examples](#examples)
 1. [API Documentation](#api-documentation)
 
@@ -30,6 +31,25 @@ With the approach offered here, because everything important to your form now li
 * Allows for a pluggable/composeable ecosystem, rather than one-solution-to-rule-them-all
 
 And, most importantly, eliminate local component state as much as possible.
+
+## Usage
+
+```
+npm i --save react-reformed
+```
+
+Then just import it and wrap your form component:
+
+```js
+import React from 'react'
+import reformed from 'react-reformed'
+
+export class YourForm extends React.Component {
+  /* ... */
+}
+
+export default reformed()(YourForm)
+```
 
 ## Examples
 
