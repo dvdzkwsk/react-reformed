@@ -64,7 +64,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
     }
   }
 
-  FormWrapper.displayName = `Form(${getComponentName(WrappedComponent)})`
+  FormWrapper.displayName = `Reformed(${getComponentName(WrappedComponent)})`
   return hoistNonReactStatics(FormWrapper, WrappedComponent)
 }
 
