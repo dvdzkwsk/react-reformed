@@ -85,13 +85,14 @@ class MyForm extends React.Component {
   }
 
   render () {
+    // model is injected by reformed
     const { model } = this.props
 
     return (
       <form onSubmit={this._onSubmit}>
-        <input name='firstName' onChange={this._onChangeInput} />
-        <input name='lastName' onChange={this._onChangeInput} />
-        <input name='dob' type='date' onChange={this._onChangeInput} />
+        <input name='firstName' value={model.firstName} onChange={this._onChangeInput} />
+        <input name='lastName' value={model.lastName} onChange={this._onChangeInput} />
+        <input name='dob' type='date' value={model.dob} onChange={this._onChangeInput} />
         <button type='submit'>Submit</button>
       </form>
     )
