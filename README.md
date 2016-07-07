@@ -61,6 +61,7 @@ import syncWith from 'react-reformed/lib/syncWith'
 import validate from 'react-reformed/lib/validate'
 ```
 
+
 ## Examples
 
 ### Basic Form
@@ -273,11 +274,11 @@ const tracker = (WrappedComponent) => {
 // Easily set initial form state from your redux store...
 // and bind a submission handler while you're at it.
 compose(
-  reformed(),
   connect(
     (state) => ({ initialModel: state.forms.myForm.cachedModel }),
     { onSubmit: mySubmitFunction }
   ),
+  reformed()
 )(YourFormComponent)
 ```
 
