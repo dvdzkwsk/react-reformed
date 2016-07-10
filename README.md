@@ -1,6 +1,6 @@
 # React Reformed
 
-Tiny form bindings for React so you can stop storing your form data in local component state. This higher-order component wraps your component and, through props, injects form data (a "model") and simple bindings to update that model, giving you the opportunity to utilize composition to accomplish more advanced functionality without bloating the form component itself.
+Tiny form bindings for React so you can stop storing your form data in local component state. This higher-order component wraps your component and, through props, injects form data (a `model`) and simple bindings to update that model, giving you the opportunity to utilize composition in a middleware-like approach to accomplish more advanced functionality without bloating the form component itself.
 
 There is no framework here, it's about 75 lines of code that you could write yourself in a few minutes. The code is not what is important. My goal is to encourage developers to stop using local state in their forms, and do so without locking themselves into a prescriptive, and potentially monolithic, form library. There are some _really_ cool things you can do with simple composition, and this project is an attempt to shine some light on those alternative approaches.
 
@@ -19,7 +19,7 @@ This library does not concern itself with submission, validation, or anything of
 
 Controlled components are great, they allow you to perform realtime validation, transform user inputs on the fly, track changes over time, and generally improve developer and user experience. However, often times controlled components lead to a proliferation of local component state. You begin tracking validation states (should we be validating yet? Are we performing asynchronous operations?), submission states, and more. Before you know it, a small form component is a sizeable tangle of local state. What happens when something else needs access to that state? How do you incorporate shared validation logic?
 
-Some libraries solve this with refs, others offer bindings onto _local_ state, and still more tout a Comprehensive Form Solution with their own components and validation systems, but none of them feel right. Either they do too much, are too prescriptive, or just get in the way. Chances are, at some point these libraries will no longer fit your use case, forcing you to fight against rather than work with them. That is why this is not another library, but instead an appeal to a different way of thinking.
+Some libraries solve this with refs, others offer bindings onto _local_ state, and still more tout a Comprehensive Form Solution with their own components and validation systems, but none of them feel right. Either they do too much, are too prescriptive, or just get in the way. Chances are, at some point these libraries will no longer fit your use case, forcing you to fight against rather than work with them. That is why this project is more an appeal to a different way of thinking than a complete form library.
 
 With the approach offered here, because everything important to your form now lives in props, you can easily:
 
@@ -42,46 +42,21 @@ npm i --save react-reformed
 Then just import it and wrap your form component:
 
 ```js
-import React from 'react'
 import reformed from 'react-reformed'
 
-export class YourForm extends React.Component {
-  /* ... */
-}
-
-export default reformed()(YourForm)
-```
-
-You can also grab some of the example higher-order components via the npm package. These are just for demonstration, so they are not included in the main export. Use them just to give yourself some ideas!
-
-```js
-
-import compose from 'react-reformed/lib/compose'
-import syncWith from 'react-reformed/lib/syncWith'
-import validate from 'react-reformed/lib/validate'
-```
-
-
-## Examples
-
-### Basic Form
-
-Here's an example of a form that closely resembles basic form implementations that rely on `this.state`, but uses the form bindings instead.
-
-```js
-import reformed from 'react-reformed'
-
+// Here's an example of a form that closely resembles basic form implementations
+// that rely on `this.state`, but uses the form bindings instead.
 class MyForm extends React.Component {
   _onSubmit = (e) => {
     e.preventDefault()
     this.props.onSubmit(this.props.model)
   }
 
-  // this method is essentially just `this.props.bindToChangeEvent`,
+  // This method is essentially just `this.props.bindToChangeEvent`,
   // which is provided by the reformed wrapper. We're just demoing
   // `setProperty` for clarity in the first example.
   _onChangeInput = (e) => {
-    // `setProperty` is injected by `reformed`
+    // `setProperty` is injected by reformed
     this.props.setProperty(e.target.name, e.taget.value)
   }
 
@@ -103,6 +78,16 @@ class MyForm extends React.Component {
 // Wrap your form in the higher-order component
 export default reformed()(MyForm)
 ```
+
+You can also grab some of the example higher-order components via the npm package. These are just for demonstration, so they are not included in the main export. Use them just to give yourself some ideas!
+
+```js
+import compose from 'react-reformed/lib/compose'
+import syncWith from 'react-reformed/lib/syncWith'
+import validate from 'react-reformed/lib/validate'
+```
+
+## Examples
 
 ### Fast Prototypes
 
@@ -183,7 +168,7 @@ compose(
 )(YourFormComponent)
 ```
 
-And no matter what you choose to do, your _form never changes_.
+And no matter what you choose to do, _your form component never changes_.
 
 #### Example Implementation
 ```js

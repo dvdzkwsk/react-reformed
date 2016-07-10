@@ -18,7 +18,6 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
 
     setModel = (model) => {
       this.setState({ model })
-      return model
     }
 
     setProperty = (prop, value) => {
@@ -56,6 +55,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
         setProperty: this.setProperty,
         setModel: this.setModel,
       })
+      // SIDE EFFECT-ABLE. Just for developer convenience and expiramentation.
       const finalProps = typeof middleware === 'function'
         ? middleware(nextProps)
         : nextProps
