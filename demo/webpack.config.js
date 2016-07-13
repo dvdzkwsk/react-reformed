@@ -5,8 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
   entry: {
     app: [
-      path.resolve(__dirname, 'src', 'index.js'),
-      'webpack/hot/dev-server'
+      path.resolve(__dirname, 'src', 'index.js')
     ]
   },
   output: {
@@ -15,15 +14,31 @@ module.exports = {
     publicPath: '/'
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src', 'index.html'),
       hash: false,
       filename: 'index.html',
       inject: 'body',
     }),
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
-  ],
+  ].concat(process.env.NODE_ENV === 'production'
+    ? [
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          unused: true,
+          dead_code: true,
+          warnings: false
+        }
+      })
+    ]
+    : [
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.NoErrorsPlugin()
+    ]),
   module: {
     loaders: [
       {
