@@ -55,7 +55,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
         setProperty: this.setProperty,
         setModel: this.setModel,
       })
-      // SIDE EFFECT-ABLE. Just for developer convenience and expiramentation.
+      // SIDE EFFECT-ABLE. Just for developer convenience and expirementation.
       const finalProps = typeof middleware === 'function'
         ? middleware(nextProps)
         : nextProps
