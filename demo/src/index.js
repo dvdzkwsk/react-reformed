@@ -126,6 +126,10 @@ class App extends React.Component {
       <div className='container' style={{ marginTop: '2rem' }}>
         <h1>React Reformed</h1>
         <h2>Make forms <del>great</del> simple again.</h2>
+        <p>
+          This form also syncs your state to local storage... try reloading
+          the page after entering some information.
+        </p>
         <MyFormContainer onSubmit={this._onSubmit} />
       </div>
     )
