@@ -54,6 +54,7 @@ module.exports = {
       'react-reformed/lib/compose$': path.resolve(__dirname, '..', 'src', 'compose'),
       'react-reformed/lib/syncWith$': path.resolve(__dirname, '..', 'src', 'syncWith'),
       'react-reformed/lib/validate$': path.resolve(__dirname, '..', 'src', 'validate'),
+      'react-reformed/lib/validateSchema$': path.resolve(__dirname, '..', 'src', 'validateSchema'),
     }
   }
 }

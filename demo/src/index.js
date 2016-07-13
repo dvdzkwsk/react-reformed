@@ -1,3 +1,4 @@
+import cx from 'classnames'
 import React from 'react'
 import ReactDOM from 'react-dom'
 // These imports are aliased to ~/src, so you are welcome to mess with
@@ -5,40 +6,44 @@ import ReactDOM from 'react-dom'
 import reformed from 'react-reformed'
 import compose from 'react-reformed/lib/compose'
 import syncWith from 'react-reformed/lib/syncWith'
-import validate, { isRequired } from 'react-reformed/lib/validate'
+import validateSchema from 'react-reformed/lib/validateSchema'
 
 /*
  * Here you can create your base form component.
  *
  * Look at how small and sleek it is.
  */
-const MyForm = ({ bindInput, model, onSubmit }) => {
+const MyForm = ({ bindInput, model, onSubmit, schema }) => {
   const submitHandler = (e) => {
     e.preventDefault()
     onSubmit(model)
   }
+  const isUsernameValid = schema.fields.username.isValid
+  const isPasswordValid = schema.fields.password.isValid
 
   return (
     <form onSubmit={submitHandler}>
-      <fieldset className='form-group'>
-        <label htmlFor='firstName'>First Name</label>
+      <fieldset className={cx('form-group', { 'has-danger': !isUsernameValid })}>
+        <label htmlFor='username'>Username</label>
         <input
           type='text'
           className='form-control'
-          placeholder='First Name'
-          {...bindInput('firstName')}
+          placeholder='Username'
+          {...bindInput('username')}
         />
       </fieldset>
-      <fieldset className='form-group'>
-        <label htmlFor='lastName'>Last Name</label>
+      <fieldset className={cx('form-group', { 'has-danger': !isPasswordValid })}>
+        <label htmlFor='password'>Password</label>
         <input
           type='text'
           className='form-control'
-          placeholder='Last Name'
-          {...bindInput('lastName')}
+          placeholder='Password'
+          {...bindInput('password')}
         />
       </fieldset>
-      <button type='submit' className='btn btn-primary'>Submit</button>
+      <button type='submit' className='btn btn-primary' disabled={!schema.isValid}>
+        Submit
+      </button>
     </form>
   )
 }
@@ -53,10 +58,21 @@ const MyForm = ({ bindInput, model, onSubmit }) => {
  */
 const createFormContainer = compose(
   reformed(),
-  validate([
-    isRequired('firstName'),
-    isRequired('lastName'),
-  ]),
+  validateSchema({
+    username: {
+      required: true,
+      maxLength: 8,
+    },
+    password: {
+      test: (value, fail) => {
+        if (!value || value.length < 5) {
+          return fail('Password must be at least 5 characters')
+        } else if (value.length > 12) {
+          return fail('Password must be no longer than 12 characters')
+        }
+      }
+    }
+  }),
   syncWith(
     'myForm',
     (key) => JSON.parse(localStorage.getItem(key)),
@@ -75,7 +91,11 @@ const displayFormState = (WrappedComponent) => {
       <div>
         {React.createElement(WrappedComponent, props)}
         <hr />
+        <h4>Model</h4>
         {JSON.stringify(props.model, null, 2)}
+        <hr />
+        <h4>Schema Validation</h4>
+        {JSON.stringify(props.schema, null, 2)}
       </div>
     )
   }
