@@ -24,6 +24,9 @@ module.exports = {
       hash: false,
       filename: 'index.html',
       inject: 'body',
+      minify: {
+        collapseWhitespace: true
+      }
     }),
   ].concat(process.env.NODE_ENV === 'production'
     ? [
