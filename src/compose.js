@@ -1,11 +1,6 @@
-export default function compose (...fns) {
-  return function () {
-    let i = fns.length - 1
-    let res = fns[i--].apply(null, arguments)
-
-    while (i >= 0) {
-      res = fns[i--](res)
-    }
-    return res
+export default function compose (..._fns) {
+  return (...args) => {
+    const [fn, ...fns] = _fns.reverse()
+    return fns.reduce((acc, f) => f(acc), fn(...args))
   }
 }

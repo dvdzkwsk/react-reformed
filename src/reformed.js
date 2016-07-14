@@ -44,7 +44,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       }
     }
 
-    bindInput = (name, type) => {
+    bindInput = (name) => {
       return {
         name,
         value: this.state.model[name],
