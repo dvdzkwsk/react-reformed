@@ -42,7 +42,7 @@ const MyForm = ({ bindInput, model, onSubmit, schema }) => {
         />
       </fieldset>
       <button type='submit' className='btn btn-primary' disabled={!schema.isValid}>
-        Submit
+        View Source Code
       </button>
     </form>
   )
@@ -58,6 +58,7 @@ const MyForm = ({ bindInput, model, onSubmit, schema }) => {
  */
 const createFormContainer = compose(
   reformed(),
+  // Let's try out some schema validation...
   validateSchema({
     username: {
       required: true,
@@ -73,6 +74,7 @@ const createFormContainer = compose(
       }
     }
   }),
+  // And while we're at it, we can make our form sync to local storage.
   syncWith(
     'myForm',
     (key) => JSON.parse(localStorage.getItem(key)),
@@ -118,19 +120,23 @@ const MyFormContainer = compose(
  */
 class App extends React.Component {
   _onSubmit = (model) => {
-    // noop
+    window.location = 'https://github.com/davezuko/react-reformed/blob/master/demo/src/index.js'
   }
 
   render () {
     return (
       <div className='container' style={{ marginTop: '2rem' }}>
-        <h1>React Reformed</h1>
-        <h2>Make forms <del>great</del> simple again.</h2>
-        <p>
-          This form also syncs your state to local storage... try reloading
-          the page after entering some information.
-        </p>
-        <MyFormContainer onSubmit={this._onSubmit} />
+        <div className='row'>
+          <div className='col-sm-8 col-sm-offset-2'>
+            <h1>React Reformed</h1>
+            <h2>Make forms <del>great</del> simple again.</h2>
+            <p>
+              This form also syncs your state to local storage...<br/>
+              Try reloading the page after entering some information.<br/>
+            </p>
+            <MyFormContainer onSubmit={this._onSubmit} />
+          </div>
+        </div>
       </div>
     )
   }
