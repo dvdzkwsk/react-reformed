@@ -99,6 +99,7 @@ You can also grab some of the example higher-order components via the npm packag
 import compose from 'react-reformed/lib/compose'
 import syncWith from 'react-reformed/lib/syncWith'
 import validate from 'react-reformed/lib/validate'
+import validateSchema from 'react-reformed/lib/validateSchema'
 ```
 
 ## Examples
