@@ -8,6 +8,8 @@ import compose from 'react-reformed/lib/compose'
 import syncWith from 'react-reformed/lib/syncWith'
 import validateSchema from 'react-reformed/lib/validateSchema'
 
+const contains = (x, xs) => xs && !!~xs.indexOf(x)
+
 /*
  * Here you can create your base form component.
  * Look at how small and sleek it is.
@@ -49,7 +51,7 @@ const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, sc
                 type='checkbox'
                 name='checkboxes'
                 value={value}
-                checked={!!~model.checkboxes.indexOf(value)}
+                checked={contains(value, model.checkboxes)}
                 onChange={bindToChangeEvent}
               />
               {' '}{value}
