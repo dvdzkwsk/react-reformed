@@ -6,11 +6,12 @@ There is no framework here, it's about 75 lines of code that you could write you
 
 This library does not concern itself with submission, validation, or anything of that sort -- it's just a simple read/write API, and isn't even all that specific to forms. Everybody's forms are different, and I'm not smart enough to create a universal abstraction. As such, over time, I've found it easy to encapsulate the core logic of a form (setting properties on a model) in a single component and leverage composition to perform more intricate functionality.
 
-[Try it out in this JSFiddle sandbox.](https://jsfiddle.net/465qszsx/4/)
+[Check out a demo here.](https://zuko.me/react-reformed)
 
 ## Table of Contents
 
 1. [Rationale](#rationale)
+1. [Demo](#demo)
 1. [Usage](#usage)
 1. [Examples](#examples)
 1. [API Documentation](#api-documentation)
@@ -32,6 +33,19 @@ With the approach offered here, because everything important to your form now li
 * Avoid becoming locked into a specific framework
 
 Most importantly, this approach allows for a pluggable/composeable ecosystem, rather than a One Solution To Rule Them All ([_but will soon change_](https://xkcd.com/927/)) approach.
+
+## Demo
+
+If you want to play around with this in a sandbox, there's a working demo in the repo. It's the same one hosted [here](https://zuko.me/react-reformed). Get your own copy by doing the following:
+
+```bash
+git clone git@github.com:davezuko/react-reformed    # Get that thing!
+cd react-reformed                                   # Get in there!
+npm i                                               # Install its things!
+npm start                                           # Start the thing!
+
+# You can now find the app at http://localhost:8080
+```
 
 ## Usage
 
