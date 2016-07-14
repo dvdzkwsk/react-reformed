@@ -12,7 +12,8 @@ import validateSchema from 'react-reformed/lib/validateSchema'
  * Here you can create your base form component.
  * Look at how small and sleek it is.
  */
-const MyForm = ({ bindInput, model, onSubmit, schema }) => {
+const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, schema }) => {
+  const sampleCheckboxOptions = ['foo', 'bar', 'baz']
   const submitHandler = (e) => {
     e.preventDefault()
     onSubmit(model)
@@ -39,6 +40,22 @@ const MyForm = ({ bindInput, model, onSubmit, schema }) => {
           placeholder='Password'
           {...bindInput('password')}
         />
+      </fieldset>
+      <fieldset className='form-group'>
+        {sampleCheckboxOptions.map(value => (
+          <div key={value} className='checkbox-inline'>
+            <label>
+              <input
+                type='checkbox'
+                name='checkboxes'
+                value={value}
+                checked={!!~model.checkboxes.indexOf(value)}
+                onChange={bindToChangeEvent}
+              />
+              {' '}{value}
+            </label>
+          </div>
+        ))}
       </fieldset>
       <button type='submit' className='btn btn-primary' disabled={!schema.isValid}>
         View Source Code
@@ -137,7 +154,10 @@ class App extends React.Component {
               This form also syncs your state to local storage...<br/>
               Try reloading the page after entering some information.<br/>
             </p>
-            <MyFormContainer onSubmit={this._onSubmit} />
+            <MyFormContainer
+              onSubmit={this._onSubmit}
+              initialModel={{ checkboxes: [] }}
+            />
           </div>
         </div>
       </div>
