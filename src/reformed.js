@@ -21,7 +21,6 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
     }
 
     setProperty = (prop, value) => {
-      console.log(prop, value)
       return this.setModel(assign({}, this.state.model, {
         [prop]: value,
       }))
