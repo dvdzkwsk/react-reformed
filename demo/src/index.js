@@ -114,10 +114,10 @@ const displayFormState = (WrappedComponent) => {
         {React.createElement(WrappedComponent, props)}
         <hr />
         <h4>Model</h4>
-        {JSON.stringify(props.model, null, 2)}
+        <pre>{JSON.stringify(props.model, null, 2)}</pre>
         <hr />
         <h4>Schema Validation</h4>
-        {JSON.stringify(props.schema, null, 2)}
+        <pre>{JSON.stringify(props.schema, null, 2)}</pre>
       </div>
     )
   }
