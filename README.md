@@ -386,7 +386,7 @@ const syncWith = (key, get, set) => (WrappedComponent) => {
 ## API Documentation
 
 ### `reformed : (Props -> Props) -> ReactComponent -> ReactComponent`
-Wraps a React component and injects the form model and setters for that model.
+Wraps a React component and injects the form model and setters for that model. You can optionally pass in a function to the first `reformed` call that will transform the props that `reformed` applies to the wrapped component. This is really just for experimentation and to keep the API open for the future.
 
 Example:
 ```js
@@ -416,8 +416,10 @@ this.props.setModel({
 })
 ```
 
-### `bindInput : String k -> Object`
-**Injected by the `reformed` higher order component.** Applies `name`, `value`, and `onChange` properties to the input element.
+### `bindInput : String k -> Props`
+**Injected by the `reformed` higher order component.** Applies `name`, `value`, and `onChange` properties to the input element. Because this does not have a ref to your component or know anything other than the name of the model property, it cannot handle every possible scenario. As such, this should mostly just be used for simple `text` inputs where the event target's name and value can be used to update the property.
+
+When other use cases arise, it's recommended to just use `setProperty` or `setModel` directly or extend `reformed` to provide the bindings you need.
 
 Example:
 ```js
