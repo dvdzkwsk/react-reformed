@@ -2,7 +2,7 @@ import cx from 'classnames'
 import React from 'react'
 import ReactDOM from 'react-dom'
 // These imports are aliased to ~/src, so you are welcome to mess with
-// their source code :)
+// the source code :)
 import reformed from 'react-reformed'
 import compose from 'react-reformed/lib/compose'
 import syncWith from 'react-reformed/lib/syncWith'
@@ -10,7 +10,6 @@ import validateSchema from 'react-reformed/lib/validateSchema'
 
 /*
  * Here you can create your base form component.
- *
  * Look at how small and sleek it is.
  */
 const MyForm = ({ bindInput, model, onSubmit, schema }) => {
@@ -49,11 +48,11 @@ const MyForm = ({ bindInput, model, onSubmit, schema }) => {
 }
 
 /*
- * Let's build our form's container component. We can save our composition so
- * that it can be re-used across the application once you figure out what
- * your needs are!
+ * Let's build our form's container component. We can save all or parts of
+ * this composition so that it can be reused across the application once you
+ * figure out what is general to the application!
  *
- * Here, we'll apply some simple validation rules and also configure our form
+ * Here we'll apply some simple validation rules and also configure our form
  * to sync to local storage.
  */
 const createFormContainer = compose(
@@ -65,6 +64,8 @@ const createFormContainer = compose(
       maxLength: 8,
     },
     password: {
+      // note: my `test` implementation is super basic, `fail` can
+      // only be used synchronously. Write your own to suit your needs!
       test: (value, fail) => {
         if (!value || value.length < 5) {
           return fail('Password must be at least 5 characters')
@@ -105,9 +106,11 @@ const displayFormState = (WrappedComponent) => {
 
 /*
  * Time to create our final form component... this is what you'd
- * ultimately export if you had a real application structure.
+ * ultimately export from your component definition if you had a
+ * real application structure.
+ *
  * And hey, Look at that, a totally composed form that displays
- * its model, syncs to * local storage, and does some basic
+ * its model, syncs to local storage, and does some basic
  * validation in less than 100 lines of component-specific code.
  */
 const MyFormContainer = compose(

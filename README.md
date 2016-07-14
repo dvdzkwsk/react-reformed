@@ -4,7 +4,7 @@ Tiny form bindings for React so you can stop storing your form data in local com
 
 There is no framework here, it's about 75 lines of code that you could write yourself in a few minutes. The code is not what is important. My goal is to encourage developers to stop using local state in their forms, and do so without locking themselves into a prescriptive, and potentially monolithic, form library. There are some _really_ cool things you can do with simple composition, and this project is an attempt to shine some light on those alternative approaches.
 
-This library does not concern itself with submission, validation, or anything of that sort -- it's just a simple read/write API, and isn't even all that specific to forms. Everybody's forms are different, and I'm not smart enough to create a universal abstraction. As such, over time, I've found it easy to encapsulate the core logic of a form (setting properties on a model) in a single component and leverage composition to perform more intricate functionality.
+This library does not concern itself with submission, validation, or anything of that sort (though there are demos to show how these can be done) -- it's just a simple read/write API, and isn't even all that specific to forms. Everybody's forms are different, and I'm not smart enough to create a universal abstraction. As such, over time, I've found it easy to encapsulate the core logic of a form (setting properties on a model) in a single component and leverage composition to perform more intricate functionality.
 
 [Check out a demo here.](https://zuko.me/react-reformed)
 
@@ -71,7 +71,7 @@ class MyForm extends React.Component {
   // `setProperty` for clarity in the first example.
   _onChangeInput = (e) => {
     // `setProperty` is injected by reformed
-    this.props.setProperty(e.target.name, e.taget.value)
+    this.props.setProperty(e.target.name, e.target.value)
   }
 
   render () {
@@ -282,7 +282,7 @@ compose(
 )(YourFormComponent)
 ```
 
-If you want to persist your form in Redux over time, you don't even need `reformed`. By following its pattern of simple model setters, you can just fulfill the same interface with `connect` and have a redux-ified form without importing another entire library. And if you switch to something else down the road you won't need to unreduxify the form, just its container.
+If you want to persist your form in Redux over time, you don't even need `reformed`. By following its pattern of simple model setters, you can just fulfill the same interface with `connect` and have a redux-ified form without needing a redux-specific form library (or any other framework/implementation). The best part is, if you switch to something else down the road you won't need to unreduxify the form, just its container.
 
 ```js
 connect(
