@@ -18,6 +18,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
 
     setModel = (model) => {
       this.setState({ model })
+      return model
     }
 
     setProperty = (prop, value) => {
