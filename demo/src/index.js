@@ -23,8 +23,7 @@ const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, sc
   const isUsernameValid = schema.fields.username.isValid
   const isPasswordValid = schema.fields.password.isValid
   const isNestedDataValid = schema.fields['nested.data'].isValid
-  
-  console.log(model)
+
   return (
     <form onSubmit={submitHandler}>
       <fieldset className={cx('form-group', { 'has-danger': !isUsernameValid })}>
