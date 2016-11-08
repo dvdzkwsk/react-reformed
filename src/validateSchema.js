@@ -9,8 +9,6 @@ const getValidationErrors = (schema, model) => Object.keys(schema).reduce((acc, 
   const value = get(model, key)
   const rules = schema[key]
 
-  console.log("validate", key, model, value, rules)
-
   if (rules.required && !value) {
     errors.push(`${key} is required`)
   }
