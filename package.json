@@ -19,7 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "hoist-non-react-statics": "^1.2.0",
-    "object-assign": "^4.1.0"
+    "lodash.get": "^4.4.2",
+    "object-assign": "^4.1.0",
+    "object-path-immutable": "^0.5.0"
   },
   "devDependencies": {
     "babel": "^6.5.2",
