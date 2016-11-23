@@ -36,7 +36,7 @@ const getValidationErrors = (schema, model) => Object.keys(schema).reduce((acc, 
 
   return assign({}, acc, {
     isValid: !errors.length && acc.isValid,
-    fields: Object.assign({}, acc.fields, {
+    fields: assign({}, acc.fields, {
       [key]: {
         isValid: !errors.length,
         errors,
