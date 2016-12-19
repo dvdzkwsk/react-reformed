@@ -2,6 +2,8 @@ import React from 'react'
 import assign from 'object-assign'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import getComponentName from './_internal/getComponentName'
+import get from 'lodash.get'
+import immutable from 'object-path-immutable'
 
 const makeWrapper = (middleware) => (WrappedComponent) => {
   class FormWrapper extends React.Component {
@@ -22,9 +24,8 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
     }
 
     setProperty = (prop, value) => {
-      return this.setModel(assign({}, this.state.model, {
-        [prop]: value,
-      }))
+      console.log(prop, value)
+      return this.setModel(immutable.set(this.state.model, prop, value)) 
     }
 
     // This, of course, does not handle all possible inputs. In such cases,
@@ -34,7 +35,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       const { name, type, value } = e.target
 
       if (type === 'checkbox') {
-        const oldCheckboxValue = this.state.model[name] || []
+        const oldCheckboxValue = get(this.state.model, name) || []
         const newCheckboxValue = e.target.checked
           ? oldCheckboxValue.concat(value)
           : oldCheckboxValue.filter(v => v !== value)
@@ -48,7 +49,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
     bindInput = (name) => {
       return {
         name,
-        value: this.state.model[name],
+        value: get(this.state.model, name),
         onChange: this.bindToChangeEvent,
       }
     }

@@ -22,6 +22,7 @@ const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, sc
   }
   const isUsernameValid = schema.fields.username.isValid
   const isPasswordValid = schema.fields.password.isValid
+  const isNestedDataValid = schema.fields['nested.data'].isValid
 
   return (
     <form onSubmit={submitHandler}>
@@ -41,6 +42,15 @@ const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, sc
           className='form-control'
           placeholder='Password'
           {...bindInput('password')}
+        />
+      </fieldset>
+      <fieldset className={cx('form-group', { 'has-danger': !isNestedDataValid })}>
+        <label htmlFor='nestedData'>Nested Data</label>
+        <input
+          type='text'
+          className='form-control'
+          placeholder='data'
+          {...bindInput('nested.data')}
         />
       </fieldset>
       <fieldset className='form-group'>
@@ -92,6 +102,9 @@ const createFormContainer = compose(
           return fail('Password must be no longer than 12 characters')
         }
       }
+    },
+    "nested.data": {
+      required: true
     }
   }),
   // And while we're at it, we can make our form sync to local storage.
@@ -158,7 +171,7 @@ class App extends React.Component {
             </p>
             <MyFormContainer
               onSubmit={this._onSubmit}
-              initialModel={{ checkboxes: [] }}
+              initialModel={{ checkboxes: [], nested: { data: ""} }}
             />
           </div>
         </div>

@@ -2,10 +2,11 @@ import React from 'react'
 import assign from 'object-assign'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import getComponentName from './_internal/getComponentName'
+import get from 'lodash.get'
 
 const getValidationErrors = (schema, model) => Object.keys(schema).reduce((acc, key) => {
   const errors = []
-  const value = model[key]
+  const value = get(model, key)
   const rules = schema[key]
 
   if (rules.required && !value) {
