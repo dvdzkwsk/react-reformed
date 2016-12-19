@@ -6,7 +6,7 @@ There is no framework here, it's about 75 lines of code that you could write you
 
 This library does not concern itself with submission, validation, or anything of that sort (though there are demos to show how these can be done) -- it's just a simple read/write API, and isn't even all that specific to forms. Everybody's forms are different, and I'm not smart enough to create a universal abstraction. As such, over time, I've found it easy to encapsulate the core logic of a form (setting properties on a model) in a single component and leverage composition to perform more intricate functionality.
 
-[Check out a demo here.](https://davezuko.github.io/react-reformed)
+[Check out a demo here.](https://react-reformed.zuko.me)
 
 ## Table of Contents
 
