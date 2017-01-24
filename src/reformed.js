@@ -48,7 +48,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
     bindInput = (name) => {
       return {
         name,
-        value: this.state.model[name],
+        value: this.state.model[name] || '',
         onChange: this.bindToChangeEvent,
       }
     }
