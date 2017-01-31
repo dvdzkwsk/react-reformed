@@ -53,6 +53,16 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       }
     }
 
+    componentWillReceiveProps(nextProps) {
+      const initialModelOrig = this.props.initialModel
+      const initialModelUpdated = nextProps.initialModel
+      for (let key in initialModelUpdated) {
+        if (initialModelOrig[key] !== initialModelUpdated[key]) {
+          this.setModel(initialModelUpdated)
+        }
+      }
+    }
+
     render () {
       const nextProps = assign({}, this.props, {
         bindInput: this.bindInput,
