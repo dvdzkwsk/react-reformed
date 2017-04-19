@@ -175,8 +175,10 @@ compose(
       required: true
     },
     age: {
-      test: (value) => {
-        return value && value > 18
+      test: (value, fail) => {
+        if (!value || value <= 18) {
+          return fail('Age must be 18 or older');
+        }
       }
     }
   })
