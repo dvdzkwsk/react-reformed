@@ -176,7 +176,7 @@ compose(
     },
     age: {
       test: (value) => {
-        return age && age > 18
+        return value && value > 18
       }
     }
   })
