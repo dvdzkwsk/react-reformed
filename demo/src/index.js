@@ -81,6 +81,12 @@ const createFormContainer = compose(
     username: {
       required: true,
       maxLength: 8,
+      // note: you can optionally generate custom errors via `formatError`
+      // by providing a string or a function that receives context
+      formatError: (context) => {
+        // e.g. return a message id for use with `react-intl` or similar
+        return `errors.username.${context.condition}`;
+      }
     },
     password: {
       // note: my `test` implementation is super basic, `fail` can
