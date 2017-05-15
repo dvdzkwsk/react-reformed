@@ -8,20 +8,26 @@ const getValidationErrors = (schema, model) => Object.keys(schema).reduce((acc, 
   const value = model[key]
   const rules = schema[key]
 
+  const renderError = (condition, fallback) => {
+    return typeof rules.formatError === 'function'
+      ? rules.formatError({ key, value, condition, rules, schema, model })
+      : fallback
+  }
+
   if (rules.required && !value) {
-    errors.push(`${key} is required`)
+    errors.push(renderError('required', `${key} is required`))
   }
   if (rules.type && typeof value !== rules.type) {
-    errors.push(`${key} must be of type ${rules.type}, but got ${typeof value}`)
+    errors.push(renderError('type', `${key} must be of type ${rules.type}, but got ${typeof value}`))
   }
   if (rules.minLength) {
     if (!value || value.length < rules.minLength) {
-      errors.push(`${key} must have at least ${rules.minLength} characters`)
+      errors.push(renderError('minLength', `${key} must have at least ${rules.minLength} characters`))
     }
   }
   if (rules.maxLength) {
     if (value && value.length > rules.maxLength) {
-      errors.push(`${key} must not have more than ${rules.maxLength} characters`)
+      errors.push(renderError('maxLength', `${key} must not have more than ${rules.maxLength} characters`))
     }
   }
   if (rules.test) {
