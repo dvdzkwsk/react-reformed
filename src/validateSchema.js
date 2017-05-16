@@ -9,13 +9,9 @@ const getValidationErrors = (schema, model) => Object.keys(schema).reduce((acc, 
   const rules = schema[key]
 
   const renderError = (condition, fallback) => {
-    let err;
-    try {
-      err = rules.formatError({ key, value, condition, rules, schema, model });
-    } catch (e) {
-      err = rules.formatError || fallback;
-    }
-    return err;
+    return typeof rules.formatError === 'function'
+      ? rules.formatError({ key, value, condition, rules, schema, model })
+      : fallback;
   }
 
   if (rules.required && !value) {
