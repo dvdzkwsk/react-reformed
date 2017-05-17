@@ -18,6 +18,7 @@
   "author": "David Zukowski <david@zuko.me> (https://zuko.me)",
   "license": "MIT",
   "dependencies": {
+    "debounce": "^1.0.2",
     "hoist-non-react-statics": "^1.2.0",
     "object-assign": "^4.1.0"
   },

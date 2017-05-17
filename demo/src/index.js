@@ -31,7 +31,7 @@ const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, sc
           type='text'
           className='form-control'
           placeholder='Username'
-          {...bindInput('username')}
+          {...bindInput('username', { updateOn: 'onBlur', debounce: 100 })}
         />
       </fieldset>
       <fieldset className={cx('form-group', { 'has-danger': !isPasswordValid })}>

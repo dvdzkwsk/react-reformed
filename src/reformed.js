@@ -1,4 +1,5 @@
 import React from 'react'
+import debounce from 'debounce'
 import assign from 'object-assign'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import getComponentName from './_internal/getComponentName'
@@ -45,11 +46,26 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       }
     }
 
-    bindInput = (name) => {
+    bindInput = (name, opts) => {
+      const cfg = Object.assign({
+        updateOn: 'onChange',
+        debounce: 0
+      }, opts)
+
+      const { updateOn } = cfg
+      const asyncHandler = (fn) => (e) => {
+        e.persist();
+        fn(e);
+      }
+
+      const updater = (!cfg.debounce)
+        ? this.bindToChangeEvent
+        : asyncHandler(debounce(this.bindToChangeEvent, cfg.debounce, false))
+
       return {
         name,
-        value: this.state.model[name] || '',
-        onChange: this.bindToChangeEvent,
+        defaultValue: this.state.model[name] || '',
+        [updateOn]: updater
       }
     }
 
