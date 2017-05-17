@@ -54,8 +54,8 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
 
       const { updateOn } = cfg
       const asyncHandler = (fn) => (e) => {
-        e.persist();
-        fn(e);
+        e.persist()
+        fn(e)
       }
 
       const updater = (!cfg.debounce)
