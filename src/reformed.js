@@ -47,7 +47,7 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
     }
 
     bindInput = (name, opts) => {
-      const cfg = Object.assign({
+      const cfg = assign({
         updateOn: 'onChange',
         debounce: 0
       }, opts)
