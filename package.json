@@ -19,7 +19,8 @@
   "license": "MIT",
   "dependencies": {
     "hoist-non-react-statics": "^1.2.0",
-    "object-assign": "^4.1.0"
+    "object-assign": "^4.1.0",
+    "prop-types": "^15.5.10"
   },
   "devDependencies": {
     "babel": "^6.5.2",
