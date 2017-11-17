@@ -8,20 +8,18 @@ import compose from 'react-reformed/lib/compose'
 import syncWith from 'react-reformed/lib/syncWith'
 import validateSchema from 'react-reformed/lib/validateSchema'
 
-const contains = (x, xs) => xs && !!~xs.indexOf(x)
-
 /*
  * Here you can create your base form component.
  * Look at how small and sleek it is.
  */
-const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, schema }) => {
+const MyForm = ({ bindInput, bindCheckbox, model, onSubmit, setProperty, schema }) => {
   const sampleCheckboxOptions = ['foo', 'bar', 'baz']
   const submitHandler = (e) => {
     e.preventDefault()
     onSubmit(model)
   }
-  const isUsernameValid = schema.fields.username.isValid
-  const isPasswordValid = schema.fields.password.isValid
+  const isUsernameValid = schema.fields.username.untouched || schema.fields.username.isValid
+  const isPasswordValid = schema.fields.password.untouched || schema.fields.password.isValid
 
   return (
     <form onSubmit={submitHandler}>
@@ -51,8 +49,7 @@ const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, sc
                 type='checkbox'
                 name='checkboxes'
                 value={value}
-                checked={contains(value, model.checkboxes)}
-                onChange={bindToChangeEvent}
+                {...bindCheckbox('checkboxes', value)}
               />
               {' '}{value}
             </label>
@@ -81,6 +78,7 @@ const createFormContainer = compose(
     username: {
       required: true,
       maxLength: 8,
+      updateOn: 'blur',
       // note: you can optionally generate custom errors via `formatError`
       // by providing a string or a function that receives context
       formatError: (context) => {

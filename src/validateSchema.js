@@ -3,14 +3,69 @@ import assign from 'object-assign'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import getComponentName from './_internal/getComponentName'
 
-const getValidationErrors = (schema, model) => Object.keys(schema).reduce((acc, key) => {
+const getAllValidationErrors = (schema, props, prevResults) => {
+  const fields = Object.keys(schema).reduce((acc, key) => {
+    const result = getValidationErrorsForProp(schema, props, key, prevResults)
+    if (!result) return acc
+    return assign({}, acc, { [key]: result })
+  }, prevResults.fields)
+
+  // Calculate aggregate flags
+  const anyTrue = (prev, curr) => prev === true ? true : curr
+  const anyFalse = (prev, curr) => prev === false ? false : curr
+  const aggregators = {
+    isValid: anyFalse,
+    dirty: anyTrue,
+    pristine: anyFalse,
+    touched: anyTrue,
+    untouched: anyFalse
+  }
+
+  const form = Object.keys(fields).reduce((acc, key) => {
+    Object.keys(aggregators).map(flag => {
+      acc[flag] = aggregators[flag](acc[flag], fields[key][flag])
+    })
+    return acc
+  }, {})
+
+  return {
+    isValid: form.isValid,
+    form,
+    fields
+  }
+}
+
+const getValidationErrorsForProp = (schema, props, key, prevResults) => {
   const errors = []
+  const { model, lastInputEvent, inputFlags } = props
+  const prevResult = prevResults.fields[key] || {}
   const value = model[key]
   const rules = schema[key]
+  const flags = inputFlags[key] || {}
+  const updateOn = rules.updateOn || 'change'
+
+  const isPristine = (flags.pristine)
+  const isRelatedEvent = (lastInputEvent.name === key)
+  const isValidEventType = (lastInputEvent.type === updateOn)
+  const isCurrentlyInvalid = (prevResult.isValid === false)
+  const isFirstEvaluation = (key in prevResults.fields === false)
+
+  const shouldValidate = (
+    isPristine ||
+    ( isRelatedEvent && (isValidEventType || isCurrentlyInvalid) )
+  )
+
+  if (shouldValidate === false) {
+    return (isFirstEvaluation)
+      ? { isValid: true, errors: [], ...flags }
+      : assign({}, prevResult, flags)
+  }
+
+  const ctx = { key, value, rules, schema, model }
 
   const renderError = (condition, fallback) => {
     return typeof rules.formatError === 'function'
-      ? rules.formatError({ key, value, condition, rules, schema, model })
+      ? rules.formatError({ ...ctx, condition })
       : fallback
   }
 
@@ -34,29 +89,30 @@ const getValidationErrors = (schema, model) => Object.keys(schema).reduce((acc, 
     let error
     rules.test(value, (msg) => {
       error = msg
-    })
+    }, ctx)
     if (error) {
       errors.push(error)
     }
   }
 
-  return assign({}, acc, {
-    isValid: !errors.length && acc.isValid,
-    fields: assign({}, acc.fields, {
-      [key]: {
-        isValid: !errors.length,
-        errors,
-      }
-    })
-  })
-}, { isValid: true, fields: {} })
+  return {
+    isValid: !errors.length,
+    errors,
+    ...flags
+  }
+}
 
 const validateSchema = (schema) => (WrappedComponent) => {
-  const validated = (props) => {
-    const validationErrors = getValidationErrors(schema, props.model)
+  let cachedSchema = {
+    isValid: true,
+    form: {},
+    fields: {}
+  }
 
+  const validated = (props) => {
+    cachedSchema = getAllValidationErrors(schema, props, cachedSchema)
     return React.createElement(WrappedComponent, assign({}, props, {
-      schema: validationErrors,
+      schema: cachedSchema
     }))
   }
   validated.displayName = `ValidateSchema(${getComponentName(WrappedComponent)})`
