@@ -75,7 +75,13 @@ const MyForm = ({ bindInput, bindToChangeEvent, model, onSubmit, setProperty, sc
  * to sync to local storage.
  */
 const createFormContainer = compose(
-  reformed(),
+  reformed(({ setProperty, ...rest }) => ({
+    ...rest,
+    setProperty: (name, value) => {
+      console.log('Spied on setProperty: ', { name, value })
+      return setProperty(name, value)
+    }
+  })),
   // Let's try out some schema validation...
   validateSchema({
     username: {

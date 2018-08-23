@@ -28,44 +28,53 @@ const makeWrapper = (middleware) => (WrappedComponent) => {
       }))
     }
 
-    // This, of course, does not handle all possible inputs. In such cases,
-    // you should just use `setProperty` or `setModel`. Or, better yet,
-    // extend `reformed` to supply the bindings that match your needs.
-    bindToChangeEvent = (e) => {
-      const { name, type, value } = e.target
+    makeInputHelpers = ({ setProperty }) => {
+      // This, of course, does not handle all possible inputs. In such cases,
+      // you should just use `setProperty` or `setModel`. Or, better yet,
+      // extend `reformed` to supply the bindings that match your needs.
+      const bindToChangeEvent = (e) => {
+        const { name, type, value } = e.target
 
-      if (type === 'checkbox') {
-        const oldCheckboxValue = this.state.model[name] || []
-        const newCheckboxValue = e.target.checked
-          ? oldCheckboxValue.concat(value)
-          : oldCheckboxValue.filter(v => v !== value)
+        if (type === 'checkbox') {
+          const oldCheckboxValue = this.state.model[name] || []
+          const newCheckboxValue = e.target.checked
+            ? oldCheckboxValue.concat(value)
+            : oldCheckboxValue.filter(v => v !== value)
 
-        this.setProperty(name, newCheckboxValue)
-      } else {
-        this.setProperty(name, value)
+          setProperty(name, newCheckboxValue)
+        } else {
+          setProperty(name, value)
+        }
       }
-    }
 
-    bindInput = (name) => {
-      return {
-        name,
-        value: this.state.model[name] || '',
-        onChange: this.bindToChangeEvent,
+      const bindInput = (name) => {
+        return {
+          name,
+          value: this.state.model[name] || '',
+          onChange: bindToChangeEvent,
+        }
       }
+
+      return { bindToChangeEvent, bindInput }
     }
 
     render () {
-      const nextProps = assign({}, this.props, {
-        bindInput: this.bindInput,
-        bindToChangeEvent: this.bindToChangeEvent,
+      let nextProps = assign({}, this.props, {
         model: this.state.model,
         setProperty: this.setProperty,
         setModel: this.setModel,
       })
+
       // SIDE EFFECT-ABLE. Just for developer convenience and expirementation.
-      const finalProps = typeof middleware === 'function'
-        ? middleware(nextProps)
-        : nextProps
+      if (typeof middleware === 'function') {
+        nextProps = middleware(nextProps)
+      }
+
+      // Create input helpers (`bindInput`, `bindToChangeEvent`) and merge
+      // them into the final props.
+      // The middleware can replace `setProperty`, so the helpers can't
+      // reference it until we have the final version.
+      const finalProps = assign({}, this.makeInputHelpers(nextProps), nextProps)
 
       return React.createElement(WrappedComponent, finalProps)
     }
